@@ -11,13 +11,16 @@ const SF_LONG = -122.40559101104735;
 const DEFAULT_ZOOM = 9;
 
 const LAYERS = ['rgb', 'ndvi', 'ndwi', 'false-color-nir', 'evi'];
+const SENSORS = ['theia', 'landsat-8', 'deimos-1'];
+const SEASONS = ['summer', 'fall', 'winter', 'spring'];
+
 const FILTERS = {
-  sensor_platform: 'theia,landsat-8,deimos-1',
-  cloud_coverage_lte: 20,
-  sun_elevation_lte: 90,
-  season: 'winter',
+  sensor_platform: SENSORS.join(','),
+  season: SEASONS.join(','),
+  cloud_coverage_lte: 100,
+  sun_elevation_lte: 90
 };
-//season: 'summer,winter,spring,fall'
+
 
 window.onload = function() {
   var map = L.map('map');
@@ -38,6 +41,12 @@ window.onload = function() {
 
     // Allow the layers to be toggled. 
     addLayerToggle(L.tileLayer(url), colorLayer, i, map);
+  }
+
+  // Add the sensor-toggle elements
+  for(let i = 0; i < SENSORS.length; i++) {
+    let sensorName = SENSORS[i];
+    addSensorToggle(sensorName);
   }
 
   // Show starting lat/long
@@ -69,6 +78,30 @@ function createTileUrl(colorLayer, filterValues) {
   return main;
 }
 
+function addSensorToggle(name) {
+  const activeClassVal = "active";
+  const inactiveClassVal = "";
+
+  var link = document.createElement('a');
+      link.href = '#';
+      link.className = inactiveClassVal;
+      link.innerHTML = name;
+
+  link.onclick = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (this.classList.contains(activeClassVal)) {
+      this.className = inactiveClassVal;
+    } else {
+      this.className = activeClassVal;
+    }
+  };
+
+  var layers = document.getElementById('sensor-toggle');
+  layers.appendChild(link);
+}
+
 // From https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/
 // Creates a button which can toggle the map layers on and off
 function addLayerToggle(layer, name, zIndex, map) {
@@ -95,7 +128,7 @@ function addLayerToggle(layer, name, zIndex, map) {
   };
 
   // Fetch the nav element
-  var layers = document.getElementById('menu-ui');
+  var layers = document.getElementById('layer-toggle');
   layers.appendChild(link);
 }
 

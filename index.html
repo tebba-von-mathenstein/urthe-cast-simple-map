@@ -10,13 +10,38 @@
   </head>
 
   <body>
-    <div id="lat-long-input">
-      <input id="lat-in" type="text">
-      <input id="long-in" type="text">
-      <button id="new-location-btn">Goto New Location</button>  
-    </div>
+    <form id="filter-form">
+      <fieldset>
+        <label for="lat-in">Latitude</label>
+        <input id="lat-in" type="text" placeholder="Latitude">  
+      </fieldset>
+      
+      <fieldset>
+        <label for="long-in">Longitude</label>
+        <input id="long-in" type="text" placeholder="Longitude">
+      </fieldset>
+      
+      <fieldset>
+        <label for="cloud-cover-in">Cloud Coverage</label>
+        <input id="cloud-cover-in" type="text" placeholder="Cloud Coverage">
+      </fieldset>
+
+      <fieldset>
+        <label for="sun-elevation-in">Sun Elevation</label>
+        <input id="sun-elevation-in" type="text" placeholder="Sun Elevation">
+      </fieldset>
+
+      <div id="new-location-btn">
+        <button>Goto New Location</button>  
+      </div>
+      
+    </form>
     
-    <nav id="menu-ui" class="menu-ui"></nav>
+    <div id="toggle-menus">
+      <nav id="sensor-toggle" class="menu-ui"></nav>
+      <nav id="layer-toggle" class="menu-ui"></nav>
+    </div>
+
     <div id="map"></div>
   </body>
 </html> 

@@ -3,13 +3,22 @@ body {
     padding: 0;
 }
 
-#lat-long-input {
-    width: 50%;
+#filter-form {
+    width: 80%;
     margin: 0 auto;
 }
 
-#lat-long-input input {
-    height: 20px;
+#filter-form fieldset {
+    display: inline-block;
+    border: none;
+}
+
+#filter-form fieldset input[text], #filter-form fieldset label{ 
+    display: block;
+}
+
+#new-location-btn {
+    text-align: center;
 }
 
 #map {
@@ -22,12 +31,17 @@ body {
     position: absolute;
 }
 
+#toggle-menus {
+    position: absolute;
+    z-index: 1;
+    right: 10px;
+    margin: 10px 10px 0 0;
+}
+
 /* CSS is from https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/ */
 .menu-ui {
     background: #fff;
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    margin: 10px;
     z-index: 1;
     border-radius: 3px;
     width: 120px;
