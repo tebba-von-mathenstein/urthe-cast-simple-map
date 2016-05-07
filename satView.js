@@ -10,6 +10,10 @@ const SF_LAT = 37.78684346730307;
 const SF_LONG = -122.40559101104735;
 const DEFAULT_ZOOM = 9;
 
+// menu-ui togglers
+const ACTIVE_CLASS = "active";
+const INACTIVE_CLASS = "";
+
 const LAYERS = ['rgb', 'ndvi', 'ndwi', 'false-color-nir', 'evi'];
 const SENSORS = ['theia', 'landsat-8', 'deimos-1'];
 const SEASONS = ['summer', 'fall', 'winter', 'spring'];
@@ -25,14 +29,8 @@ const FILTERS = {
 window.onload = function() {
   var map = L.map('map');
 
-  // Map can alter itself
-  map.setLocation = setMapLocation;
-
-  // So I can play with setLocation in the console
-  window.setMapLocation = setMapLocation.bind(map);
-
   // Lets look at SF
-  map.setLocation(SF_LAT, SF_LONG, DEFAULT_ZOOM);
+  setMapLocation(map, SF_LAT, SF_LONG, DEFAULT_ZOOM);
 
   // Create the layers
   for(let i = 0; i < LAYERS.length; i++) {
@@ -49,6 +47,9 @@ window.onload = function() {
     addSensorToggle(sensorName);
   }
 
+  // Allow menu hiding
+  document.getElementById("hide-menus").addEventListener('click', hideMenuHandler);
+
   // Show starting lat/long
   var latInput = document.getElementById('lat-in');
   var longInput = document.getElementById('long-in');
@@ -58,8 +59,17 @@ window.onload = function() {
   // Listen for lat-long changes
   var changeLocationButton = document.getElementById('new-location-btn');
   changeLocationButton.addEventListener('click', function(event) {
-    map.setLocation(latInput.value, longInput.value);
+    setMapLocation(map, latInput.value, longInput.value);
   });
+}
+
+/**
+ * Given a latitude, logitude, and zoom[0-15] values, move the map
+ * wherever it needs to go.
+ */
+function setMapLocation(map, latitude, longitude, zoom) {
+  var latLong = L.latLng(latitude, longitude);
+  map.setView(latLong, zoom);
 }
 
 /* * 
@@ -78,23 +88,52 @@ function createTileUrl(colorLayer, filterValues) {
   return main;
 }
 
-function addSensorToggle(name) {
-  const activeClassVal = "active";
-  const inactiveClassVal = "";
+/**
+ * Click handler for hide/show menus button.
+ * Toggles the menus to be hidden.
+ */
+function hideMenuHandler(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  var menus = document.querySelectorAll('.menu-ui.hideable');
+  var targetStyle;
 
+  if (event.target.classList.contains(ACTIVE_CLASS)) {
+    event.target.className = INACTIVE_CLASS;
+    event.target.innerText = "Hide Menus";
+    targetStyle = "";
+  } else {
+    event.target.className = ACTIVE_CLASS;
+    event.target.innerText = "Show Menus";
+    targetStyle = "none";
+  }
+
+  for(let i = 0; i < menus.length; i++) {
+    let subMenu = menus[i];
+    subMenu.style.display = targetStyle;
+  }
+}
+
+/**
+ * Given a name, create a menu-ui element and add it to the sensor
+ * section. This name must correspond with a value from the UrtheCast
+ * api sensor filter options.
+ */
+function addSensorToggle(name) {
   var link = document.createElement('a');
       link.href = '#';
-      link.className = inactiveClassVal;
+      link.className = INACTIVE_CLASS;
       link.innerHTML = name;
 
-  link.onclick = function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  link.onclick = function(event) {
+    event.preventDefault();
+    event.stopPropagation();
 
-    if (this.classList.contains(activeClassVal)) {
-      this.className = inactiveClassVal;
+    if (this.classList.contains(ACTIVE_CLASS)) {
+      this.className = INACTIVE_CLASS;
     } else {
-      this.className = activeClassVal;
+      this.className = ACTIVE_CLASS;
     }
   };
 
@@ -102,8 +141,18 @@ function addSensorToggle(name) {
   layers.appendChild(link);
 }
 
-// From https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/
-// Creates a button which can toggle the map layers on and off
+/**
+ * Based on: https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/
+ *
+ * Create a menu-ui element and add it to the layer section.
+ * This name must correspond with a value from the UrtheCast
+ * api color layer options.
+ * 
+ * @param layer: a layer object from mapbox.js
+ * @param name: a string, must be a valid color layer option from UrtheCast
+ * @param zIndex: a number, the zIndex of the layer on the map
+ * @param map: a reference to the map object which will hold the layers
+ */
 function addLayerToggle(layer, name, zIndex, map) {
   layer.setZIndex(zIndex);
 
@@ -111,34 +160,25 @@ function addLayerToggle(layer, name, zIndex, map) {
   // toggles layers on and off.
   var link = document.createElement('a');
       link.href = '#';
-      link.className = '';
+      link.className = INACTIVE_CLASS;
       link.innerHTML = name;
 
-  link.onclick = function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+  link.onclick = function(event) {
+    event.preventDefault();
+    event.stopPropagation();
 
     if (map.hasLayer(layer)) {
       map.removeLayer(layer);
-      this.className = '';
+      this.className = INACTIVE_CLASS;
     } else {
       map.addLayer(layer);
-      this.className = 'active';
+      this.className = ACTIVE_CLASS;
     }
   };
 
   // Fetch the nav element
   var layers = document.getElementById('layer-toggle');
   layers.appendChild(link);
-}
-
-/**
- * Given a latitude, logitude, and zoom values, move the map
- * wherever it needs to go. 
- */
-function setMapLocation(latitude, longitude, zoom) {
-  var latLong = L.latLng(latitude, longitude);
-  this.setView(latLong, zoom);
 }
 
 /** 
