@@ -15,8 +15,9 @@ var ToggleMenuProto = Object.create(HTMLElement.prototype);
 ToggleMenuProto.createdCallback = function() {
     var hideShowSection = new ToggleSection();
     var hideToggle = new Toggle();
+
     hideToggle.innerText = SHOW_HIDE_TEXT;
-    hideShowSection.addEventListener('click', _hideToggles);
+    hideShowSection.addEventListener('click', this.hideToggles.bind(this));
 
     hideShowSection.appendChild(hideToggle);
     this.appendChild(hideShowSection);
@@ -25,33 +26,9 @@ ToggleMenuProto.createdCallback = function() {
 /**
  * Hide all toggles underneath the hide/show section
  */
-function _hideToggles(event) {
-    var menus = document.querySelectorAll('toggle-section');
-
-    for(let i = 0; i < menus.length; i++) {
-        let subMenu = menus[i];
-        
-        if(!subMenu.classList.contains(CANNOT_HIDE_CLASS)) {
-            ToggleMenuProto._handleSubMenuAnimation(subMenu);
-        }
-    }
-}
-
-ToggleMenuProto._handleSubMenuAnimation = function(subMenu) {
-    var toggles = subMenu.querySelectorAll('toggle-item');
-
-    for(let i = 0; i < toggles.length; i++){
-        let toggle = toggles[i];
-        let yToShift = 0;
-
-        if(subMenu.classList.contains(HIDDEN_CLASS)) {
-          // yToShift = toggle.offsetTop + subMenu.offsetTop + toggle.offsetHeight;
-          yToShift = toggle.offsetTop;
-        }
-
-        toggle.style.transform = `translate(0, -${yToShift}px)`;
-        console.log(toggle.style.transform);
-    }
+ToggleMenuProto.hideToggles = function(event) {
+    var 
+    this.classList.toggle(HIDDEN_CLASS);
 }
 
 var ToggleMenu = document.registerElement('toggle-menu', {
