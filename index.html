@@ -3,10 +3,13 @@
   <head>
     <title>Much Map</title>
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css">
-    <link rel="stylesheet" href="/css.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/input.css">
+    <link rel="stylesheet" href="/css/toggle-menu.css">
 
     <script type="text/javascript" src="https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js"></script>
-    <script type="text/javascript" src="/satView.js"></script>
+    <script type="text/javascript" src="/js/ToggleMenu.js"></script>
+    <script type="text/javascript" src="/js/satView.js"></script>
   </head>
 
   <body>
@@ -39,13 +42,7 @@
     </form>
 
     <div id="map-wrapper">
-      <div id="map">
-        <div id="toggle-menus">
-        <nav class="menu-ui"><a id="hide-menus">Hide Menus</a></nav>
-        <nav id="sensor-toggle" class="menu-ui hideable"></nav>
-        <nav id="layer-toggle" class="menu-ui hideable"></nav>
-      </div>
-      </div>
+      <div id="map"></div>
     </div>
     
   </body>

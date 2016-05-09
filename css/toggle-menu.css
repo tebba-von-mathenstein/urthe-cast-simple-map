@@ -1,0 +1,61 @@
+toggle-menu {
+    z-index: 99; /* problems and most are css */
+    right: 5px;
+    margin: 10px 10px 10px 10px;
+    padding: 10px 10px 10px 10px;
+    position: absolute;
+}
+
+/* lower elements slide under the hide button */
+toggle-section.cannot-hide {
+    z-index: 2;
+}
+
+/* CSS is adapted from https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/ */
+toggle-section {
+    background-color:rgba(255, 255, 255, 0);
+    margin: 0 10px 10px 0;
+    padding: 0 10px 10px 0;
+    border-radius: 5px;
+    width: 120px;
+    /*border: 1px solid rgba(0,0,0,0.4);*/
+    cursor: pointer;
+}
+
+toggle-section.hidden {
+    transform: translate(0, -10%);
+}
+
+toggle-item {
+    font-size: 13px;
+    text-decoration: none;
+
+    background-color:rgba(100, 100, 100, .5);
+    color: rgba(255, 255, 255, 1);
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+
+    display: inline;
+    height: 90%;
+    width: 80%;
+    padding: 12px;
+    border: 1px solid rgba(0,0,0,0.25);
+    text-align: center;
+    
+    /* for animation show/hide */
+    z-index: 1;
+    transform: translate(0, 0%);
+    transition: all .3s ease;
+}
+
+toggle-item:hover {
+    color: rgba(170, 230, 200, 1);
+    background-color: rgba(200, 200, 200, .8);
+}
+
+toggle-item.active {
+    background-color:rgba(100, 100, 200, .5);
+}
+
+toggle-item.active:hover {
+    background-color:rgba(150, 150, 250, .8);
+}

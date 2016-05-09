@@ -5,10 +5,6 @@ const LS_API_SECRET = 'uc_api_secret';
 const API_KEY = getOrPrompt(LS_API_KEY);
 const API_SECRET = getOrPrompt(LS_API_SECRET);
 
-// menu-ui togglers
-const ACTIVE_CLASS = "active";
-const INACTIVE_CLASS = "";
-
 const LAYERS = ['rgb', 'ndvi', 'ndwi', 'false-color-nir', 'evi'];
 const SENSORS = ['theia', 'landsat-8', 'deimos-1'];
 const SEASONS = ['summer', 'fall', 'winter', 'spring'];
@@ -26,42 +22,58 @@ const DEFAULT_OPTIONS = {
 };
 
 // Onload we grab and set default input fields, add a listener for our button, and initialize
-var MAP_GLOBAL;
 window.onload = function(event){
-  // Allow menu hiding
-  document.getElementById("hide-menus").addEventListener('click', hideMenuHandler);
+    var map = L.map('map');
 
-  // Show starting lat/long
-  var latInput = document.getElementById('lat-in');
-  latInput.value = DEFAULT_OPTIONS.latitude;
+    var mapElement = document.getElementById('map');
+    var toggleMenu = new ToggleMenu();
+    var sensorSection = new ToggleSection();
+    var layerSection = new ToggleSection();
 
-  var longInput = document.getElementById('long-in');
-  longInput.value = DEFAULT_OPTIONS.longitude;
+    for(let idx in SENSORS) {
+        let toggle = new Toggle();
+        toggle.innerText = SENSORS[idx];
+        toggle.classList.add(ACTIVE_CLASS);
+        sensorSection.appendChild(toggle);
+    }
 
-  var cloudInput = document.getElementById('cloud-cover-in');
-  cloudInput.value = DEFAULT_OPTIONS.filters.cloud_coverage_lte;
+    for(let idx in LAYERS) {
+        let toggle = new Toggle();
+        let name = LAYERS[idx];
+        let onByDefault = idx == 0;
 
-  var sunElevInput = document.getElementById('sun-elevation-in');
-  sunElevInput.value = DEFAULT_OPTIONS.filters.sun_elevation_lte;
+        toggle.innerText = name;
+        layerSection.appendChild(toggle);
+        linkLayerToggle(toggle, name, idx, map, idx == 0, DEFAULT_OPTIONS.filters);
+    }
 
-  // Listen for lat-long changes
-  var changeLocationButton = document.getElementById('new-location-btn');
-  changeLocationButton.addEventListener('click', resetMapOptions);
+    toggleMenu.appendChild(sensorSection);
+    toggleMenu.appendChild(layerSection);
+    mapElement.insertBefore(toggleMenu, mapElement.firstChild);
 
-  // Add the sensor-toggle elements
-  for(let i = 0; i < SENSORS.length; i++) {
-    let sensorName = SENSORS[i];
-    addSensorToggle(sensorName);
-  }
-  
-  MAP_GLOBAL = L.map('map');
-  MAP_GLOBAL.setView(L.latLng(DEFAULT_OPTIONS.latitude, DEFAULT_OPTIONS.longitude), DEFAULT_OPTIONS.zoom);
+    // Show starting lat/long
+    var latInput = document.getElementById('lat-in');
+    latInput.value = DEFAULT_OPTIONS.latitude;
 
-  initializeMap();
+    var longInput = document.getElementById('long-in');
+    longInput.value = DEFAULT_OPTIONS.longitude;
+
+    var cloudInput = document.getElementById('cloud-cover-in');
+    cloudInput.value = DEFAULT_OPTIONS.filters.cloud_coverage_lte;
+
+    var sunElevInput = document.getElementById('sun-elevation-in');
+    sunElevInput.value = DEFAULT_OPTIONS.filters.sun_elevation_lte;
+
+    // Listen for lat-long changes
+    var changeLocationButton = document.getElementById('new-location-btn');
+    changeLocationButton.addEventListener('click', resetMapOptions);
+
+    map.setView(L.latLng(DEFAULT_OPTIONS.latitude, DEFAULT_OPTIONS.longitude), DEFAULT_OPTIONS.zoom);
+
+    initializeMap(map);
 };
 
-function initializeMap(options) {
-  map = MAP_GLOBAL;
+function initializeMap(map,  options) {
   if(options === undefined) {
     options = DEFAULT_OPTIONS;
   }
@@ -75,15 +87,16 @@ function initializeMap(options) {
 
   map.panTo(L.latLng(options.latitude, options.longitude));
 
-  // Create the layers
-  var layerToggles = document.getElementById('layer-toggle');
-  layerToggles.innerHTML = '';
 
-  for(let i = 0; i < LAYERS.length; i++) {
-    let layerName = LAYERS[i];
-    let initiallyOn = i === 0;
-    addLayerToggle(layerName, i, map, initiallyOn, options.filters);
-  }
+  // Create the layers
+  // var layerToggles = document.getElementById('layer-toggle');
+  // layerToggles.innerHTML = '';
+
+  // for(let i = 0; i < LAYERS.length; i++) {
+  //   let layerName = LAYERS[i];
+  //   let initiallyOn = i === 0;
+  //   addLayerToggle(layerName, i, map, initiallyOn, options.filters);
+  // }
 }
 
 function resetMapOptions() {
@@ -134,59 +147,6 @@ function createTileUrl(colorLayer, filterValues) {
 }
 
 /**
- * Click handler for hide/show menus button.
- * Toggles the menus to be hidden.
- */
-function hideMenuHandler(event) {
-  event.preventDefault();
-  event.stopPropagation();
-
-  var menus = document.querySelectorAll('.menu-ui.hideable');
-  var targetStyle;
-
-  if (event.target.classList.contains(ACTIVE_CLASS)) {
-    event.target.className = INACTIVE_CLASS;
-    event.target.innerText = "Hide Menus";
-    targetStyle = "";
-  } else {
-    event.target.className = ACTIVE_CLASS;
-    event.target.innerText = "Show Menus";
-    targetStyle = "none";
-  }
-
-  for(let i = 0; i < menus.length; i++) {
-    let subMenu = menus[i];
-    subMenu.style.display = targetStyle;
-  }
-}
-
-/**
- * Given a name, create a menu-ui element and add it to the sensor
- * section. This name must correspond with a value from the UrtheCast
- * api sensor filter options.
- */
-function addSensorToggle(name) {
-  var link = document.createElement('a');
-      link.href = '#';
-      link.className = ACTIVE_CLASS;
-      link.innerHTML = name;
-
-  link.onclick = function(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (this.classList.contains(ACTIVE_CLASS)) {
-      this.className = INACTIVE_CLASS;
-    } else {
-      this.className = ACTIVE_CLASS;
-    }
-  };
-
-  var layers = document.getElementById('sensor-toggle');
-  layers.appendChild(link);
-}
-
-/**
  * Based on: https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/
  *
  * Create a menu-ui element and add it to the layer section.
@@ -197,41 +157,32 @@ function addSensorToggle(name) {
  * @param name: a string, must be a valid color layer option from UrtheCast
  * @param zIndex: a number, the zIndex of the layer on the map
  * @param map: a reference to the map object which will hold the layers
+ * 
+ * return DOMElement, the anchor tag added to the toggle-menu
  */
-function addLayerToggle(name, zIndex, map, initOn, filters) {
-  let url = createTileUrl(name, filters);
+function linkLayerToggle(toggleElement, name, zIndex, map, initOn, filters) {
+  var url = createTileUrl(name, filters);
   var layer = L.tileLayer(url);
 
   layer.setZIndex(zIndex);
 
-  // Create a simple layer switcher that
-  // toggles layers on and off.
-  var link = document.createElement('a');
-      link.href = '#';
-      link.className = INACTIVE_CLASS;
-      link.innerHTML = name;
-
   if(initOn) {
-    link.className = ACTIVE_CLASS;
+    toggleElement.className = ACTIVE_CLASS;
     map.addLayer(layer);
   }
 
-  link.onclick = function(event) {
+  toggleElement.onclick = function(event) {
     event.preventDefault();
     event.stopPropagation();
 
     if (map.hasLayer(layer)) {
       map.removeLayer(layer);
-      this.className = INACTIVE_CLASS;
+      toggleElement.className = INACTIVE_CLASS;
     } else {
       map.addLayer(layer);
-      this.className = ACTIVE_CLASS;
+      toggleElement.className = ACTIVE_CLASS;
     }
   };
-
-  // Fetch the nav element
-  var layers = document.getElementById('layer-toggle');
-  layers.appendChild(link);
 }
 
 /** 
