@@ -27,7 +27,6 @@ ToggleMenuProto.createdCallback = function() {
  * Hide all toggles underneath the hide/show section
  */
 ToggleMenuProto.hideToggles = function(event) {
-    var 
     this.classList.toggle(HIDDEN_CLASS);
 }
 
