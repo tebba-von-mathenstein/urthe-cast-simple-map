@@ -1,8 +1,7 @@
-var ToggleSectionProto = Object.create(HTMLElement.prototype);
-var ToggleSection = document.registerElement('toggle-section', {
-    prototype: ToggleSectionProto
-});
-
+"use strict"
+/*
+  A Menu Section is a section of the menu.
+*/
 class MenuSectionProto extends HTMLElement {
   constructor() {
     super();

@@ -1,24 +1,11 @@
 "use strict"
 // Access to the API stored in Local Storage
-const LS_API_KEY = 'uc_api_key';
-const LS_API_SECRET = 'uc_api_secret';
-const API_KEY = getOrPrompt(LS_API_KEY);
-const API_SECRET = getOrPrompt(LS_API_SECRET);
 
-const LAYERS = ['rgb', 'ndvi', 'ndwi', 'false-color-nir', 'evi'];
-const SENSORS = ['theia', 'landsat-8', 'deimos-1'];
-const SEASONS = ['summer', 'fall', 'winter', 'spring'];
 
 const DEFAULT_OPTIONS = {
   latitude: 37.78684346730307,
   longitude: -122.40559101104735,
-  zoom: 9,
-  filters: {
-    sensor_platform: SENSORS.join(','),
-    season: SEASONS.join(','),
-    cloud_coverage_lte: 100,
-    sun_elevation_lte: 90
-  }
+  zoom: 9
 };
 
 // Onload we grab and set default input fields, add a listener for our button, and initialize
@@ -27,17 +14,9 @@ window.onload = function(event){
 
     var mapElement = document.getElementById('map');
     var mapMenu = new MapMenu();
-    var sensorSection = new MenuSection();
     var layerSection = new MenuSection();
 
-    for(let idx in SENSORS) {
-        let toggle = new ToggleButton();
-        toggle.innerText = SENSORS[idx];
-        toggle.activate();
-        sensorSection.appendChild(toggle);
-    }
-
-    for(let idx in LAYERS) {
+    for(let idx in LayerToggle.LAYERS) {
         let toggle = new ToggleButton();
         let name = LAYERS[idx];
         let onByDefault = idx == 0;
@@ -47,7 +26,6 @@ window.onload = function(event){
         linkLayerToggle(toggle, name, idx, map, idx == 0, DEFAULT_OPTIONS.filters);
     }
 
-    mapMenu.appendChild(sensorSection);
     mapMenu.appendChild(layerSection);
     mapElement.insertBefore(mapMenu, mapElement.firstChild);
 
@@ -58,11 +36,13 @@ window.onload = function(event){
     var longInput = document.getElementById('long-in');
     longInput.value = DEFAULT_OPTIONS.longitude;
 
+    // TODO: Is this the right approach if we have to store these two numbers in LayerToggle?
+    // TODO: They might belong on a Map object?
     var cloudInput = document.getElementById('cloud-cover-in');
-    cloudInput.value = DEFAULT_OPTIONS.filters.cloud_coverage_lte;
+    cloudInput.value = LayerToggleProto.filters.cloud_coverage_lte;
 
     var sunElevInput = document.getElementById('sun-elevation-in');
-    sunElevInput.value = DEFAULT_OPTIONS.filters.sun_elevation_lte;
+    sunElevInput.value = LayerToggleProto.filters.sun_elevation_lte;
 
     // Listen for lat-long changes
     var changeLocationButton = document.getElementById('new-location-btn');
@@ -70,10 +50,10 @@ window.onload = function(event){
 
     map.setView(L.latLng(DEFAULT_OPTIONS.latitude, DEFAULT_OPTIONS.longitude), DEFAULT_OPTIONS.zoom);
 
-    initializeMap(map);
+    initializeMap(map, undefined, mapMenu);
 };
 
-function initializeMap(map,  options) {
+function initializeMap(map,  options, layerSection) {
   if(options === undefined) {
     options = DEFAULT_OPTIONS;
   }
@@ -89,14 +69,17 @@ function initializeMap(map,  options) {
 
 
   // Create the layers
-  // var layerToggles = document.getElementById('layer-toggle');
-  // layerToggles.innerHTML = '';
+  for(let i = 0; i < LayerToggleProto.colorLayers.length; i++) {
+    let layerName = LayerToggleProto.colorLayers[i];
+    let initiallyOn = i === 0;
+    let layerToggle = new LayerToggle();
+    layerToggle.initializeLayer(map, layerName, LayerToggle.filters);
 
-  // for(let i = 0; i < LAYERS.length; i++) {
-  //   let layerName = LAYERS[i];
-  //   let initiallyOn = i === 0;
-  //   addLayerToggle(layerName, i, map, initiallyOn, options.filters);
-  // }
+    if(i === 0) {
+      layerToggle.activate();
+    }
+    layerSection.appendChild(layerToggle);
+  }
 }
 
 function resetMapOptions() {
@@ -128,74 +111,4 @@ function resetMapOptions() {
   });
 
   initializeMap(options);
-}
-
-/* *
- * Create a tile layer url based on options and the color-set desired
- *  @param colorLayer: UrtheCast API values: 'rgb', 'ndvi', 'ndwi', 'false-color-nir', 'evi'
- *  @param filterValues: UrtheCast API key/value pairs for query params
- */
-function createTileUrl(colorLayer, filterValues) {
-  var main = `https://tile-{s}.urthecast.com/v1/${colorLayer}/{z}/{x}/{y}?api_key=${API_KEY}&api_secret=${API_SECRET}`;
-
-  for(let key in filterValues){
-    let val = filterValues[key];
-    main += `&${key}=${val}`;
-  }
-
-  return main;
-}
-
-/**
- * Based on: https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/
- *
- * Create a menu-ui element and add it to the layer section.
- * This name must correspond with a value from the UrtheCast
- * api color layer options.
- *
- * @param layer: a layer object from mapbox.js
- * @param name: a string, must be a valid color layer option from UrtheCast
- * @param zIndex: a number, the zIndex of the layer on the map
- * @param map: a reference to the map object which will hold the layers
- *
- * return DOMElement, the anchor tag added to the toggle-menu
- */
-function linkLayerToggle(toggleElement, name, zIndex, map, initOn, filters) {
-  var url = createTileUrl(name, filters);
-  var layer = L.tileLayer(url);
-
-  layer.setZIndex(zIndex);
-
-  if(initOn) {
-    toggleElement.activate();
-    map.addLayer(layer);
-  }
-
-  toggleElement.addEventListener('click', function(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (map.hasLayer(layer)) {
-      map.removeLayer(layer);
-    } else {
-      map.addLayer(layer);
-    }
-  });
-}
-
-/**
- * Takes a key for local storage and fetches the value, or prompts
- * the user for it if it's not in LS.
- *
- * @param lsKeyValue: a string to be used as a local storage key.
- */
-function getOrPrompt(lsKeyValue) {
-  var valInStorage = localStorage.getItem(lsKeyValue);
-
-  if(!valInStorage) {
-    valInStorage = prompt(`Enter a value for ${lsKeyValue}`);
-    localStorage.setItem(lsKeyValue, valInStorage);
-  }
-
-  return valInStorage;
 }

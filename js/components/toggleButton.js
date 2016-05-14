@@ -19,11 +19,11 @@ class ToggleButtonProto extends HTMLElement {
     */
     attachedCallback() {
       this.addEventListener('click', function(event) {
-          this.toggleActivated();
+          this.toggleActive();
       });
     }
 
-    toggleActivated() {
+    toggleActive() {
       this.classList.toggle(ToggleButtonProto.activeClass);
     }
 
