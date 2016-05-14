@@ -41,8 +41,12 @@ class UrtheCastMapProto extends HTMLElement {
     this.map = L.map('uc-map');
 
     this.mapMenu = new MapMenu();
+
     this.layerSection = new MenuSection();
+    this.layerSection.addEventListener('click', this.disableAllLayers.bind(this), true);
+
     this.sensorSection = new MenuSection();
+    this.sensorSection.addEventListener('click', this.updateTileUrls.bind(this));
 
     // Create the sensor toggles
     for(let i = 0; i < UrtheCastMapProto.sensors.length; i++) {
@@ -53,15 +57,12 @@ class UrtheCastMapProto extends HTMLElement {
       this.sensorSection.appendChild(sensorToggle);
     }
 
-    // On click, update the sensor filters for the URLs
-    this.sensorSection.addEventListener('click', this.updateTileFilters.bind(this));
-
     // Add the layers w/ toggles
     for(let i = 0; i < UrtheCastMapProto.colorLayers.length; i++) {
       let layerName = UrtheCastMapProto.colorLayers[i];
       let layerToggle = new LayerToggle();
 
-      layerToggle.initializeLayer(this.map, layerName, UrtheCastMapProto.filters);
+      layerToggle.initializeLayer(this.map, layerName);
       this.layerSection.appendChild(layerToggle);
 
       if(i === 0) {
@@ -69,14 +70,12 @@ class UrtheCastMapProto extends HTMLElement {
       }
     }
 
-    // Turn off all layers (during capture phase) before toggling -- this ensures one is always on
-    this.layerSection.addEventListener('click', this.disableAllLayers.bind(this), true);
-
+    // Put the map on the page
+    this.updateTileUrls();
+    this.map.setView(L.latLng(latitude, longitude), zoom);
     this.mapMenu.appendChild(this.layerSection);
     this.mapMenu.appendChild(this.sensorSection);
     this.appendChild(this.mapMenu);
-
-    this.map.setView(L.latLng(latitude, longitude), zoom);
   }
 
   /*
@@ -94,7 +93,7 @@ class UrtheCastMapProto extends HTMLElement {
     In order to change API filter values, the tile layers have to be given a new URL. Here
     we remove the old layers and add new ones based on the current filter configuration
   */
-  updateTileFilters() {
+  updateTileUrls() {
     var filters = {};
 
     // Check acvitve sensors

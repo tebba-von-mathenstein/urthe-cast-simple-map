@@ -9,21 +9,14 @@ class LayerToggleProto extends ToggleButtonProto {
     @param map a reference to a mapbox.js/leaflet.js object that this layer belongs to
     @param colorLayer a valid UrtheCast API color layer value.
   */
-  constructor(map, colorLayer, filters) {
+  constructor() {
     super()
   }
 
-  initializeLayer(map, colorLayer, filters) {
+  initializeLayer(map, colorLayer) {
       this.map = map;
       this.innerText = colorLayer;
-      this.colorLayer = colorLayer;
-
-      // Clone any filter props to a new object
-      this.filters = {};
-      Object.assign(this.filters, filters);
-
-      this.url = LayerToggleProto.createUrl(this.colorLayer, this.filters);
-      this.layer = L.tileLayer(this.url);
+      this.layer = L.tileLayer();
   }
 
   static createUrl(colorLayer, filters) {
