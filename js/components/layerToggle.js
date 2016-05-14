@@ -3,25 +3,6 @@
   A Layer toggle is a toggle button which can turn on and off a color map
   layer.
 */
-
-// TODO: more elegant solution to api keys
-const API_KEY = getOrPrompt('uc_api_key');
-const API_SECRET = getOrPrompt('uc_api_secret');
-
-// TODO: Is there a way to have these as static properties without recreating them each time
-// and also without making them global?
-const UC_COLOR_LAYERS = ['rgb', 'ndvi', 'ndwi', 'false-color-nir', 'evi'];
-const UC_SENSORS = ['theia', 'landsat-8', 'deimos-1'];
-const UC_SEASONS = ['summer', 'fall', 'winter', 'spring'];
-
-// completely permissive defaults
-const UC_FILTERS = {
-  sensor_platform: UC_SENSORS.join(','),
-  season: UC_SEASONS.join(','),
-  cloud_coverage_lte: 100,
-  sun_elevation_lte: 90
-}
-
 class LayerToggleProto extends ToggleButtonProto {
 
   /*
@@ -44,12 +25,7 @@ class LayerToggleProto extends ToggleButtonProto {
       this.url = LayerToggleProto.createUrl(this.colorLayer, this.filters);
       this.layer = L.tileLayer(this.url);
   }
-
-  static get sensors() { return UC_SENSORS; }
-  static get seasons() { return UC_SEASONS; }
-  static get colorLayers() { return UC_COLOR_LAYERS; }
-  static get filters() { return UC_FILTERS; }
-
+  
   static createUrl(colorLayer, filters) {
     var url = `https://tile-{s}.urthecast.com/v1/${colorLayer}/{z}/{x}/{y}?api_key=${API_KEY}&api_secret=${API_SECRET}`;
 

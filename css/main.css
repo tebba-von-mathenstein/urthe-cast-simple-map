@@ -6,25 +6,17 @@ body, html{
     font-family: Tahoma,Verdana,sans-serif;
 }
 
-#content {
-    height: 100%;
-    width: 100%
-}
-
-.center {
-    text-align: center;
-}
-
 #map-wrapper {
     height: 90%;
     width: 90%;
     margin: auto;
 }
 
-#map {
+uc-map#uc-map {
     border-style: solid;
     border-width: 2px;
     border-color: #afc3ff;
     height: 90%;
-    width: 100%;
+    width: 90%;
+    position: absolute;
 }
