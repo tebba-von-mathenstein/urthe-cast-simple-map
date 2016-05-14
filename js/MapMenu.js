@@ -11,8 +11,8 @@ const SHOW_HIDE_TEXT = "Show/Hide Menus";
 /* * 
  * Create a DOMElement with the given id and give it a hide show section
  */
-var ToggleMenuProto = Object.create(HTMLElement.prototype);
-ToggleMenuProto.createdCallback = function() {
+var MapMenuProto = Object.create(HTMLElement.prototype);
+MapMenuProto.createdCallback = function() {
     var hideShowSection = new ToggleSection();
     var hideToggle = new Toggle();
 
@@ -26,12 +26,12 @@ ToggleMenuProto.createdCallback = function() {
 /**
  * Hide all toggles underneath the hide/show section
  */
-ToggleMenuProto.hideToggles = function(event) {
+MapMenuProto.hideToggles = function(event) {
     this.classList.toggle(HIDDEN_CLASS);
 }
 
-var ToggleMenu = document.registerElement('toggle-menu', {
-    prototype: ToggleMenuProto
+var MapMenu = document.registerElement('map-menu', {
+    prototype: MapMenuProto
 });
 
 var ToggleSectionProto = Object.create(HTMLElement.prototype);

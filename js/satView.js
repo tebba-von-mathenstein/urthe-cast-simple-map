@@ -26,7 +26,7 @@ window.onload = function(event){
     var map = L.map('map');
 
     var mapElement = document.getElementById('map');
-    var toggleMenu = new ToggleMenu();
+    var mapMenu = new MapMenu();
     var sensorSection = new ToggleSection();
     var layerSection = new ToggleSection();
 
@@ -47,9 +47,9 @@ window.onload = function(event){
         linkLayerToggle(toggle, name, idx, map, idx == 0, DEFAULT_OPTIONS.filters);
     }
 
-    toggleMenu.appendChild(sensorSection);
-    toggleMenu.appendChild(layerSection);
-    mapElement.insertBefore(toggleMenu, mapElement.firstChild);
+    mapMenu.appendChild(sensorSection);
+    mapMenu.appendChild(layerSection);
+    mapElement.insertBefore(mapMenu, mapElement.firstChild);
 
     // Show starting lat/long
     var latInput = document.getElementById('lat-in');

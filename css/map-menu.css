@@ -1,8 +1,9 @@
-toggle-menu {
+map-menu {
     z-index: 99; /* problems and most are css */
     right: 5px;
     margin: 10px;
     padding: 10px;
+    background-color:rgba(200, 200, 200, .3);
     position: absolute;
 }
 
@@ -23,6 +24,9 @@ toggle-section {
     /* for animation show/hide */
     transform: translate(0, 0%);
     transition: all .5s ease-in-out 1s;
+
+    display: flex;
+    margin: 5px;
 }
 
 
