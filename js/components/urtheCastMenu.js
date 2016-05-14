@@ -32,8 +32,8 @@ class MapMenuProto extends HTMLElement {
     this.latLongSection = new MenuSection();
     var latLongHTML = '' +
       '<form>' +
-        '<input type="number" name="latitude" placeholder="latitude">' +
-        '<input type="number" name="longitude" placeholder="longitude">' +
+        '<input type="number" name="latitude" placeholder="latitude" step="any">' +
+        '<input type="number" name="longitude" placeholder="longitude" step="any">' +
         '<input type="submit" value="Go">' +
       '</form>';
     this.latLongSection.innerHTML = latLongHTML;
@@ -71,9 +71,9 @@ class MapMenuProto extends HTMLElement {
 
   handleLatLongSubmit(event) {
     event.preventDefault();
-    var lat = event.currentTarget.querySelector('input[name="latitude"]').value;
-    var long = event.currentTarget.querySelector('input[name="longitude"]').value;
-    this.map.panTo([lat, long]);
+    var lat = Number(event.currentTarget.querySelector('input[name="latitude"]').value);
+    var long = Number(event.currentTarget.querySelector('input[name="longitude"]').value);
+    this.map.panTo(new L.LatLng(lat, long));
   }
 
   /*
