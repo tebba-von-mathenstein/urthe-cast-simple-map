@@ -33,6 +33,9 @@ class UrtheCastMapProto extends HTMLElement {
   static get colorLayers() { return UC_COLOR_LAYERS; }
   static get filters() { return UC_FILTERS; }
 
+  /*
+    Initialize the map component, including create the leaflet map, and map menu
+  */
   initializeMap(latitude, longitude, zoom) {
     this.id = 'uc-map';
     this.map = L.map('uc-map');
@@ -81,3 +84,22 @@ class UrtheCastMapProto extends HTMLElement {
 }
 
 var UrtheCastMap = document.registerElement('uc-map', UrtheCastMapProto);
+
+/**
+ * TODO: Move this to a utility module.
+ *
+ * Takes a key for local storage and fetches the value, or prompts
+ * the user for it if it's not in LS.
+ *
+ * @param lsKeyValue: a string to be used as a local storage key.
+ */
+function getOrPrompt(lsKeyValue) {
+  var valInStorage = localStorage.getItem(lsKeyValue);
+
+  if(!valInStorage) {
+    valInStorage = prompt(`Enter a value for ${lsKeyValue}`);
+    localStorage.setItem(lsKeyValue, valInStorage);
+  }
+
+  return valInStorage;
+}

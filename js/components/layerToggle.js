@@ -25,7 +25,7 @@ class LayerToggleProto extends ToggleButtonProto {
       this.url = LayerToggleProto.createUrl(this.colorLayer, this.filters);
       this.layer = L.tileLayer(this.url);
   }
-  
+
   static createUrl(colorLayer, filters) {
     var url = `https://tile-{s}.urthecast.com/v1/${colorLayer}/{z}/{x}/{y}?api_key=${API_KEY}&api_secret=${API_SECRET}`;
 
@@ -70,22 +70,3 @@ class LayerToggleProto extends ToggleButtonProto {
 }
 
 var LayerToggle = document.registerElement('layer-toggle', LayerToggleProto);
-
-/**
- * TODO: Move this to a utility module.
- *
- * Takes a key for local storage and fetches the value, or prompts
- * the user for it if it's not in LS.
- *
- * @param lsKeyValue: a string to be used as a local storage key.
- */
-function getOrPrompt(lsKeyValue) {
-  var valInStorage = localStorage.getItem(lsKeyValue);
-
-  if(!valInStorage) {
-    valInStorage = prompt(`Enter a value for ${lsKeyValue}`);
-    localStorage.setItem(lsKeyValue, valInStorage);
-  }
-
-  return valInStorage;
-}
