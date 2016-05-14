@@ -34,6 +34,10 @@ class ToggleButtonProto extends HTMLElement {
     deactivate() {
       this.classList.remove(ToggleButtonProto.activeClass);
     }
+
+    isActive() {
+      return this.classList.contains(ToggleButtonProto.activeClass);
+    }
 }
 
 const ToggleButton = document.registerElement('toggle-button', ToggleButtonProto);

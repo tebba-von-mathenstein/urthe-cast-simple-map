@@ -40,10 +40,9 @@ class UrtheCastMapProto extends HTMLElement {
     this.id = 'uc-map';
     this.map = L.map('uc-map');
 
-    var mapMenu = new MapMenu();
-    var layerSection = new MenuSection();
-    var sensorSection = new MenuSection();
-    var latLongSection = new MenuSection();
+    this.mapMenu = new MapMenu();
+    this.layerSection = new MenuSection();
+    this.sensorSection = new MenuSection();
 
     // Create the sensor toggles
     for(let i = 0; i < UrtheCastMapProto.sensors.length; i++) {
@@ -51,8 +50,11 @@ class UrtheCastMapProto extends HTMLElement {
       let sensorToggle = new ToggleButton();
       sensorToggle.activate();
       sensorToggle.innerText = sensorName;
-      sensorSection.appendChild(sensorToggle);
+      this.sensorSection.appendChild(sensorToggle);
     }
+
+    // On click, update the sensor filters for the URLs
+    this.sensorSection.addEventListener('click', this.updateTileFilters.bind(this));
 
     // Add the layers w/ toggles
     for(let i = 0; i < UrtheCastMapProto.colorLayers.length; i++) {
@@ -60,7 +62,7 @@ class UrtheCastMapProto extends HTMLElement {
       let layerToggle = new LayerToggle();
 
       layerToggle.initializeLayer(this.map, layerName, UrtheCastMapProto.filters);
-      layerSection.appendChild(layerToggle);
+      this.layerSection.appendChild(layerToggle);
 
       if(i === 0) {
         layerToggle.activate();
@@ -68,18 +70,52 @@ class UrtheCastMapProto extends HTMLElement {
     }
 
     // Turn off all layers (during capture phase) before toggling -- this ensures one is always on
-    layerSection.addEventListener('click', function(event) {
-      var layerToggles = layerSection.querySelectorAll('layer-toggle');
-      for(let i = 0; i < layerToggles.length; i++) {
-        layerToggles[i].deactivate();
-      }
-    }, true);
+    this.layerSection.addEventListener('click', this.disableAllLayers.bind(this), true);
 
-    mapMenu.appendChild(layerSection);
-    mapMenu.appendChild(sensorSection);
-    this.appendChild(mapMenu);
+    this.mapMenu.appendChild(this.layerSection);
+    this.mapMenu.appendChild(this.sensorSection);
+    this.appendChild(this.mapMenu);
 
     this.map.setView(L.latLng(latitude, longitude), zoom);
+  }
+
+  /*
+    This method disables all active layers.
+    Commonly used to ensure that only one layer is on at a time.
+  */
+  disableAllLayers() {
+    var layerToggles = this.layerSection.querySelectorAll('layer-toggle');
+    for(let i = 0; i < layerToggles.length; i++) {
+      layerToggles[i].deactivate();
+    }
+  }
+
+  /*
+    In order to change API filter values, the tile layers have to be given a new URL. Here
+    we remove the old layers and add new ones based on the current filter configuration
+  */
+  updateTileFilters() {
+    var filters = {};
+
+    // Check acvitve sensors
+    var activeSensors = [];
+    for(let i = 0; i < this.sensorSection.children.length; i++) {
+      let sensorToggle = this.sensorSection.children[i];
+
+      if(sensorToggle.isActive()) {
+        activeSensors.push(sensorToggle.innerText);
+      }
+    }
+
+    // sensor_platform is an UrtheCast value
+    filters.sensor_platform = activeSensors.join(',');
+
+    // Give each layer a new url based on our known filter situation
+    for(let i = 0; i < this.layerSection.children.length; i++) {
+      let layerToggle = this.layerSection.children[i];
+      let newUrl = LayerToggleProto.createUrl(layerToggle.innerText, filters)
+      layerToggle.layer.setUrl(newUrl);
+    }
   }
 }
 
