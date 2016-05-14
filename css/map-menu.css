@@ -31,7 +31,7 @@ menu-section {
 
 
 
-toggle-button {
+toggle-button, layer-toggle {
     font-size: 13px;
     text-decoration: none;
 
@@ -46,15 +46,15 @@ toggle-button {
     text-align: center;
 }
 
-toggle-button:hover {
+toggle-button:hover, layer-toggle:hover {
     color: rgba(170, 230, 200, 1);
     background-color: rgba(200, 200, 200, .8);
 }
 
-toggle-button.active {
+toggle-button.active, layer-toggle.active {
     background-color:rgba(100, 100, 200, .5);
 }
 
-toggle-button.active:hover {
+toggle-button.active:hover, layer-toggle.active:hover {
     background-color:rgba(150, 150, 250, .8);
 }

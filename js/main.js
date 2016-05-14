@@ -80,6 +80,13 @@ function initializeMap(map,  options, layerSection) {
     }
     layerSection.appendChild(layerToggle);
   }
+
+  layerSection.addEventListener('click', function(event) {
+    var layerToggles = layerSection.querySelectorAll('layer-toggle');
+    for(let i = 0; i < layerToggles.length; i++) {
+      layerToggles[i].deactivate();
+    }
+  }, true);
 }
 
 function resetMapOptions() {
