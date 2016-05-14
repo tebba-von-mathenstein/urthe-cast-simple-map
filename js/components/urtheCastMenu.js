@@ -29,6 +29,17 @@ class MapMenuProto extends HTMLElement {
     this.sensorSection = new MenuSection();
     this.sensorSection.addEventListener('click', this.updateTileUrls.bind(this));
 
+    this.latLongSection = new MenuSection();
+    var latLongHTML = '' +
+      '<form>' +
+        '<input type="number" name="latitude" placeholder="latitude">' +
+        '<input type="number" name="longitude" placeholder="longitude">' +
+        '<input type="submit" value="Go">' +
+      '</form>';
+    this.latLongSection.innerHTML = latLongHTML;
+
+    this.latLongSection.addEventListener('submit', this.handleLatLongSubmit.bind(this));
+
     // Create the sensor toggles
     for(let i = 0; i < UrtheCastMapProto.sensors.length; i++) {
       let sensorName = UrtheCastMapProto.sensors[i];
@@ -55,6 +66,14 @@ class MapMenuProto extends HTMLElement {
     this.updateTileUrls();
     this.appendChild(this.layerSection);
     this.appendChild(this.sensorSection);
+    this.appendChild(this.latLongSection);
+  }
+
+  handleLatLongSubmit(event) {
+    event.preventDefault();
+    var lat = event.currentTarget.querySelector('input[name="latitude"]').value;
+    var long = event.currentTarget.querySelector('input[name="longitude"]').value;
+    this.map.panTo([lat, long]);
   }
 
   /*
