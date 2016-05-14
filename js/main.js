@@ -27,18 +27,18 @@ window.onload = function(event){
 
     var mapElement = document.getElementById('map');
     var mapMenu = new MapMenu();
-    var sensorSection = new ToggleSection();
-    var layerSection = new ToggleSection();
+    var sensorSection = new MenuSection();
+    var layerSection = new MenuSection();
 
     for(let idx in SENSORS) {
-        let toggle = new Toggle();
+        let toggle = new ToggleButton();
         toggle.innerText = SENSORS[idx];
-        toggle.classList.add(ACTIVE_CLASS);
+        toggle.activate();
         sensorSection.appendChild(toggle);
     }
 
     for(let idx in LAYERS) {
-        let toggle = new Toggle();
+        let toggle = new ToggleButton();
         let name = LAYERS[idx];
         let onByDefault = idx == 0;
 
@@ -104,8 +104,8 @@ function resetMapOptions() {
   var longInput = document.getElementById('long-in');
   var cloudInput = document.getElementById('cloud-cover-in');
   var sunElevInput = document.getElementById('sun-elevation-in');
-  var activeSensors = document.querySelectorAll(`#sensor-toggle .${ACTIVE_CLASS}`);
-  
+  var activeSensors = document.querySelectorAll(`#sensor-toggle .${ToggleButton.activeClass}`);
+
   var sensors = [];
   for(let i = 0; i < activeSensors.length; i++) {
     sensors.push(activeSensors[i].innerText);
@@ -124,20 +124,20 @@ function resetMapOptions() {
   }
 
   map.eachLayer(function(layer) {
-    map.removeLayer(layer); 
+    map.removeLayer(layer);
   });
 
   initializeMap(options);
 }
 
-/* * 
+/* *
  * Create a tile layer url based on options and the color-set desired
  *  @param colorLayer: UrtheCast API values: 'rgb', 'ndvi', 'ndwi', 'false-color-nir', 'evi'
  *  @param filterValues: UrtheCast API key/value pairs for query params
  */
 function createTileUrl(colorLayer, filterValues) {
   var main = `https://tile-{s}.urthecast.com/v1/${colorLayer}/{z}/{x}/{y}?api_key=${API_KEY}&api_secret=${API_SECRET}`;
-  
+
   for(let key in filterValues){
     let val = filterValues[key];
     main += `&${key}=${val}`;
@@ -152,12 +152,12 @@ function createTileUrl(colorLayer, filterValues) {
  * Create a menu-ui element and add it to the layer section.
  * This name must correspond with a value from the UrtheCast
  * api color layer options.
- * 
+ *
  * @param layer: a layer object from mapbox.js
  * @param name: a string, must be a valid color layer option from UrtheCast
  * @param zIndex: a number, the zIndex of the layer on the map
  * @param map: a reference to the map object which will hold the layers
- * 
+ *
  * return DOMElement, the anchor tag added to the toggle-menu
  */
 function linkLayerToggle(toggleElement, name, zIndex, map, initOn, filters) {
@@ -167,7 +167,7 @@ function linkLayerToggle(toggleElement, name, zIndex, map, initOn, filters) {
   layer.setZIndex(zIndex);
 
   if(initOn) {
-    toggleElement.className = ACTIVE_CLASS;
+    toggleElement.activate();
     map.addLayer(layer);
   }
 
@@ -185,11 +185,11 @@ function linkLayerToggle(toggleElement, name, zIndex, map, initOn, filters) {
   };
 }
 
-/** 
+/**
  * Takes a key for local storage and fetches the value, or prompts
- * the user for it if it's not in LS. 
+ * the user for it if it's not in LS.
  *
- * @param lsKeyValue: a string to be used as a local storage key.   
+ * @param lsKeyValue: a string to be used as a local storage key.
  */
 function getOrPrompt(lsKeyValue) {
   var valInStorage = localStorage.getItem(lsKeyValue);

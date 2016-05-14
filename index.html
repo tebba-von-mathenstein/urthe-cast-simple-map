@@ -8,22 +8,25 @@
     <link rel="stylesheet" href="/css/map-menu.css">
 
     <script type="text/javascript" src="https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js"></script>
-    <script type="text/javascript" src="/js/MapMenu.js"></script>
-    <script type="text/javascript" src="/js/satView.js"></script>
+    <script type="text/javascript" src="/js/components/menuSection.js"></script>
+    <script type="text/javascript" src="/js/components/toggleButton.js"></script>
+    <script type="text/javascript" src="/js/components/urtheCastMenu.js"></script>
+    <script type="text/javascript" src="/js/components/urtheCastMap.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
   </head>
   <body>
   <form id="filter-form" action="#">
     <div class="center">
       <fieldset>
         <label for="lat-in">Latitude</label>
-        <input id="lat-in" type="text" placeholder="Latitude">  
+        <input id="lat-in" type="text" placeholder="Latitude">
       </fieldset>
-      
+
       <fieldset>
         <label for="long-in">Longitude</label>
         <input id="long-in" type="text" placeholder="Longitude">
       </fieldset>
-      
+
       <fieldset>
         <label for="cloud-cover-in">Cloud Coverage</label>
         <input id="cloud-cover-in" type="text" placeholder="Cloud Coverage">
@@ -35,7 +38,7 @@
       </fieldset>
 
       <div id="new-location-btn">
-        <button>Goto New Location</button>  
+        <button>Goto New Location</button>
       </div>
     </div>
   </form>
@@ -43,6 +46,6 @@
       <div id="map">
       </div>
     </div>
-    
+
   </body>
-</html> 
+</html>
