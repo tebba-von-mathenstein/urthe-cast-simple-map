@@ -39,83 +39,12 @@ class UrtheCastMapProto extends HTMLElement {
   initializeMap(latitude, longitude, zoom) {
     this.id = 'uc-map';
     this.map = L.map('uc-map');
-
     this.mapMenu = new MapMenu();
-
-    this.layerSection = new MenuSection();
-    this.layerSection.addEventListener('click', this.disableAllLayers.bind(this), true);
-
-    this.sensorSection = new MenuSection();
-    this.sensorSection.addEventListener('click', this.updateTileUrls.bind(this));
-
-    // Create the sensor toggles
-    for(let i = 0; i < UrtheCastMapProto.sensors.length; i++) {
-      let sensorName = UrtheCastMapProto.sensors[i];
-      let sensorToggle = new ToggleButton();
-      sensorToggle.activate();
-      sensorToggle.innerText = sensorName;
-      this.sensorSection.appendChild(sensorToggle);
-    }
-
-    // Add the layers w/ toggles
-    for(let i = 0; i < UrtheCastMapProto.colorLayers.length; i++) {
-      let layerName = UrtheCastMapProto.colorLayers[i];
-      let layerToggle = new LayerToggle();
-
-      layerToggle.initializeLayer(this.map, layerName);
-      this.layerSection.appendChild(layerToggle);
-
-      if(i === 0) {
-        layerToggle.activate();
-      }
-    }
-
-    // Put the map on the page
-    this.updateTileUrls();
+    this.mapMenu.initializeMenu(this.map)
     this.map.setView(L.latLng(latitude, longitude), zoom);
-    this.mapMenu.appendChild(this.layerSection);
-    this.mapMenu.appendChild(this.sensorSection);
     this.appendChild(this.mapMenu);
   }
 
-  /*
-    This method disables all active layers.
-    Commonly used to ensure that only one layer is on at a time.
-  */
-  disableAllLayers() {
-    var layerToggles = this.layerSection.querySelectorAll('layer-toggle');
-    for(let i = 0; i < layerToggles.length; i++) {
-      layerToggles[i].deactivate();
-    }
-  }
-
-  /*
-    In order to change API filter values, the tile layers have to be given a new URL. Here
-    we remove the old layers and add new ones based on the current filter configuration
-  */
-  updateTileUrls() {
-    var filters = {};
-
-    // Check acvitve sensors
-    var activeSensors = [];
-    for(let i = 0; i < this.sensorSection.children.length; i++) {
-      let sensorToggle = this.sensorSection.children[i];
-
-      if(sensorToggle.isActive()) {
-        activeSensors.push(sensorToggle.innerText);
-      }
-    }
-
-    // sensor_platform is an UrtheCast value
-    filters.sensor_platform = activeSensors.join(',');
-
-    // Give each layer a new url based on our known filter situation
-    for(let i = 0; i < this.layerSection.children.length; i++) {
-      let layerToggle = this.layerSection.children[i];
-      let newUrl = LayerToggleProto.createUrl(layerToggle.innerText, filters)
-      layerToggle.layer.setUrl(newUrl);
-    }
-  }
 }
 
 var UrtheCastMap = document.registerElement('uc-map', UrtheCastMapProto);
