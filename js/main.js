@@ -171,18 +171,16 @@ function linkLayerToggle(toggleElement, name, zIndex, map, initOn, filters) {
     map.addLayer(layer);
   }
 
-  toggleElement.onclick = function(event) {
+  toggleElement.addEventListener('click', function(event) {
     event.preventDefault();
     event.stopPropagation();
 
     if (map.hasLayer(layer)) {
       map.removeLayer(layer);
-      toggleElement.className = INACTIVE_CLASS;
     } else {
       map.addLayer(layer);
-      toggleElement.className = ACTIVE_CLASS;
     }
-  };
+  });
 }
 
 /**

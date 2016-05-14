@@ -36,4 +36,4 @@ class ToggleButtonProto extends HTMLElement {
     }
 }
 
-const ToggleButton = document.registerElement('toggle-item', ToggleButtonProto);
+const ToggleButton = document.registerElement('toggle-button', ToggleButtonProto);

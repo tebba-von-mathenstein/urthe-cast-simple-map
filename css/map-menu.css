@@ -7,16 +7,16 @@ map-menu {
     position: absolute;
 }
 
-toggle-section.hidden {
+menu-section.hidden {
     transform: translate(90%, 0);
 }
 
-toggle-section.hidden.cannot-hide {
+menu-section.hidden.cannot-hide {
     transform: translate(10px, 10px);
 }
 
 /* CSS is adapted from https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/ */
-toggle-section {
+menu-section {
     background-color:rgba(255, 255, 255, 0);
     border-radius: 5px;
     cursor: pointer;
@@ -31,7 +31,7 @@ toggle-section {
 
 
 
-toggle-item {
+toggle-button {
     font-size: 13px;
     text-decoration: none;
 
@@ -46,15 +46,15 @@ toggle-item {
     text-align: center;
 }
 
-toggle-item:hover {
+toggle-button:hover {
     color: rgba(170, 230, 200, 1);
     background-color: rgba(200, 200, 200, .8);
 }
 
-toggle-item.active {
+toggle-button.active {
     background-color:rgba(100, 100, 200, .5);
 }
 
-toggle-item.active:hover {
+toggle-button.active:hover {
     background-color:rgba(150, 150, 250, .8);
 }
