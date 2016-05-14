@@ -26,8 +26,6 @@ class UrtheCastMapProto extends HTMLElement {
 
   constructor() {
     super();
-    console.log("CONSTRUCT...")
-    this.id = 'map'; // This is requied by leaflet
   }
 
   static get sensors() { return UC_SENSORS; }
@@ -38,22 +36,35 @@ class UrtheCastMapProto extends HTMLElement {
   initializeMap(latitude, longitude, zoom) {
     this.id = 'uc-map';
     this.map = L.map('uc-map');
+
     var mapMenu = new MapMenu();
     var layerSection = new MenuSection();
+    var sensorSection = new MenuSection();
+    var latLongSection = new MenuSection();
 
-    // Add the layers
+    // Create the sensor toggles
+    for(let i = 0; i < UrtheCastMapProto.sensors.length; i++) {
+      let sensorName = UrtheCastMapProto.sensors[i];
+      let sensorToggle = new ToggleButton();
+      sensorToggle.activate();
+      sensorToggle.innerText = sensorName;
+      sensorSection.appendChild(sensorToggle);
+    }
+
+    // Add the layers w/ toggles
     for(let i = 0; i < UrtheCastMapProto.colorLayers.length; i++) {
       let layerName = UrtheCastMapProto.colorLayers[i];
-      let initiallyOn = i === 0;
       let layerToggle = new LayerToggle();
+
       layerToggle.initializeLayer(this.map, layerName, UrtheCastMapProto.filters);
+      layerSection.appendChild(layerToggle);
 
       if(i === 0) {
         layerToggle.activate();
       }
-      layerSection.appendChild(layerToggle);
     }
 
+    // Turn off all layers (during capture phase) before toggling -- this ensures one is always on
     layerSection.addEventListener('click', function(event) {
       var layerToggles = layerSection.querySelectorAll('layer-toggle');
       for(let i = 0; i < layerToggles.length; i++) {
@@ -61,10 +72,8 @@ class UrtheCastMapProto extends HTMLElement {
       }
     }, true);
 
-
-
-
     mapMenu.appendChild(layerSection);
+    mapMenu.appendChild(sensorSection);
     this.appendChild(mapMenu);
 
     this.map.setView(L.latLng(latitude, longitude), zoom);
