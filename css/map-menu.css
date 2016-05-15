@@ -1,0 +1,78 @@
+map-menu {
+    z-index: 99; /* problems and most are css */
+    right: 5px;
+    margin: 10px;
+    padding: 10px;
+    background-color:rgba(200, 200, 200, .3);
+    position: absolute;
+}
+
+menu-section.hidden {
+    transform: translate(90%, 0);
+}
+
+menu-section.hidden.cannot-hide {
+    transform: translate(10px, 10px);
+}
+
+/* CSS is adapted from https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/ */
+menu-section {
+    background-color:rgba(255, 255, 255, 0);
+    border-radius: 5px;
+    cursor: pointer;
+
+    /* for animation show/hide */
+    transform: translate(0, 0%);
+    transition: all .5s ease-in-out 1s;
+
+    display: flex;
+    margin: 5px;
+}
+
+input {
+    font-size: 13px;
+    text-decoration: none;
+
+    background-color:rgba(100, 100, 170, .5);
+    color: rgba(255, 255, 255, 1);
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+
+    display: inline-block;
+    padding: 5px;
+    border: 1px solid rgba(0,0,0,0.25);
+    border-radius: 5px;
+    text-align: center;
+}
+
+input[type="submit"] {
+  margin: 5px;
+}
+
+toggle-button, layer-toggle {
+    font-size: 13px;
+    text-decoration: none;
+
+    background-color:rgba(100, 100, 100, .5);
+    color: rgba(255, 255, 255, 1);
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+
+    display: inline-block;
+    padding: 15px 20px;
+    border: 1px solid rgba(0,0,0,0.25);
+    border-radius: 5px;
+    text-align: center;
+}
+
+toggle-button:hover, layer-toggle:hover {
+    color: rgba(170, 230, 200, 1);
+    background-color: rgba(200, 200, 200, .8);
+}
+
+toggle-button.active, layer-toggle.active {
+    background-color:rgba(100, 100, 200, .5);
+}
+
+toggle-button.active:hover, layer-toggle.active:hover, input[type="submit"]:hover {
+    color: rgba(170, 230, 200, 1);
+    background-color:rgba(150, 150, 250, .8);
+}
