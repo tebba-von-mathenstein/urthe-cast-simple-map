@@ -35,7 +35,7 @@ class MapMenuProto extends HTMLElement {
     this.latLongSection.innerHTML = latLongHTML;
     this.latLongSection.addEventListener('submit', this.handleLatLongSubmit.bind(this));
 
-    // TODO: Create a two-sided slider component that can be used for this and sun-angle.
+    // TODO: Create a two-sided slider component that can be used for this and sun-elevation.
     this.cloudCoverageSection = new MenuSection();
     var latLongHTML = '' +
       '<form>' +
@@ -43,7 +43,16 @@ class MapMenuProto extends HTMLElement {
         '<input type="submit" value="Go">' +
       '</form>';
     this.cloudCoverageSection.innerHTML = latLongHTML;
-    this.cloudCoverageSection.addEventListener('submit', this.handleCloudCoverageSubmit.bind(this));
+    this.cloudCoverageSection.addEventListener('submit', this.handleFilterSubmit.bind(this));
+
+    this.sunElevationSection = new MenuSection();
+    var latLongHTML = '' +
+      '<form>' +
+        '<input type="number" name="sun-elevation" placeholder="sun-elevation" step="any">' +
+        '<input type="submit" value="Go">' +
+      '</form>';
+    this.sunElevationSection.innerHTML = latLongHTML;
+    this.sunElevationSection.addEventListener('submit', this.handleFilterSubmit.bind(this));
 
 
     // Create the sensor toggles
@@ -74,6 +83,7 @@ class MapMenuProto extends HTMLElement {
     this.appendChild(this.sensorSection);
     this.appendChild(this.latLongSection);
     this.appendChild(this.cloudCoverageSection);
+    this.appendChild(this.sunElevationSection);
   }
 
   /*
@@ -89,7 +99,7 @@ class MapMenuProto extends HTMLElement {
   /*
     Reset the layer URL's to filter based on the current cloud coverage input value
   */
-  handleCloudCoverageSubmit(event) {
+  handleFilterSubmit(event) {
     event.preventDefault();
     this.updateTileUrls();
   }
@@ -131,6 +141,13 @@ class MapMenuProto extends HTMLElement {
       cloudCoverageLTE = 100; // Most permisve value
     }
     filters.cloud_coverage_lte = cloudCoverageLTE;
+
+    // Add sun angle filter
+    var sunElevationLTE = parseFloat(this.sunElevationSection.querySelector('input[name=sun-elevation]').value);
+    if(typeof sunElevationLTE !== 'number' || isNaN(sunElevationLTE)) {
+      sunElevationLTE = 90; // Most permisve value
+    }
+    filters.sun_elevation_lte = sunElevationLTE;
 
     // Give each layer a new url based on our known filter situation
     for(let i = 0; i < this.layerSection.children.length; i++) {
